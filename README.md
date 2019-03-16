@@ -31,7 +31,9 @@ The result is sent to an SQS message queue where a second Lambda function will t
 
   ```make build_lambda```
   
-  Once the Terraform build has completed, you should be able to upload a small image to the picture S3 bucket and within a few seconds, see the color of your LIFX bulb change to match the most dominant cluster color in that image.
+  After the  Terraform build has completed, you should be able to upload a small image to the picture S3 bucket and within a few seconds, see the color of your LIFX bulb change to match the most dominant cluster color in that image.
+
+- The `raspi_pic.py` script in the `scripts/` directory can be copied to a Raspberry Pi with a camera module and AWS credentials and then used to take and upload pics to S3. 
   
 - To destroy, just run:
 
