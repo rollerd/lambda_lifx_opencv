@@ -1,0 +1,13 @@
+#!/bin/bash
+
+wget https://github.com/rollerd/lambda_opencv/archive/master.zip
+unzip master.zip
+cd lambda_opencv-master/scripts
+chmod 755 build.sh
+./build.sh
+aws s3 cp lambda-package.zip s3://${s3_bucket}/opencv_layer.zip
+rm -rf python
+pip install requests -t ./python/lib/python2.7/site-packages/
+zip -r requests_layer.zip python/
+aws s3 cp requests_layer.zip s3://${s3_bucket}/requests_layer.zip
+shutdown -h now
