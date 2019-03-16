@@ -2,7 +2,7 @@
 
 wget https://github.com/rollerd/lambda_lifx_opencv/archive/master.zip
 unzip master.zip
-cd lambda_opencv-master/scripts
+cd lambda_lifx_opencv-master/scripts
 chmod 755 build.sh
 ./build.sh
 aws s3 cp lambda-package.zip s3://${s3_bucket}/opencv_layer.zip

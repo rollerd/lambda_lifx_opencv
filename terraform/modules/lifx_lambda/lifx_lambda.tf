@@ -27,15 +27,10 @@ resource "aws_iam_role_policy" "lifx_lambda" {
   "Statement": [
     {"Effect": "Allow", "Action": ["logs:CreateLogStream", "logs:PutLogEvents", "logs:CreateLogGroup"], "Resource": "*"},
     {"Effect": "Allow", "Action": ["lambda:List*", "lambda:Get*", "lambda:InvokeFunction"], "Resource": "arn:aws:lambda:*:*:function:*"},
-    {"Effect": "Allow", "Action": ["sqs:ChangeMessageVisibility", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:ReceiveMessage"], "Resource": "${var.rgb_sqs_arn}" }
+    {"Effect": "Allow", "Action": ["sqs:ChangeMessageVisibility", "sqs:DeleteMessage", "sqs:GetQueueAttributes", "sqs:ReceiveMessage"], "Resource": "${var.sqs_arn}" }
   ]
 }
 EOF
-}
-
-resource "aws_lambda_event_source_mapping" "lambda_trigger" {
-  event_source_arn = "${var.rgb_sqs_arn}"
-  function_name    = "${aws_lambda_alias.lifx_latest.arn}"
 }
 
 resource "aws_lambda_alias" "lifx_latest" {
@@ -61,4 +56,8 @@ resource "aws_lambda_function" "lifx_lambda" {
       LIFX_TOKEN = "${var.lifx_token}"
     }
   }
+}
+
+output "arn" {
+  value = "${aws_lambda_alias.lifx_latest.arn}"
 }

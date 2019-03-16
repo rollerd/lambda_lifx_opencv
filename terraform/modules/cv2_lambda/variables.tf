@@ -6,10 +6,6 @@ variable "s3_bucketpics_arn" {
   description = "s3 bucket arn for pictures"
 }
 
-variable "s3_bucketpics_id" {
-  description = "ID of pics bucket"
-}
-
 variable "s3_key" {
   description = "s3 object of lambda code"
 }
@@ -41,4 +37,12 @@ variable "memory_size" {
 
 variable "timeout" {
   description = "function timeout limit in secs"
+}
+
+variable "sqs_arn" {
+  description = "ARN of LIFX SQS"
+}
+
+variable "sqs_id" {
+  description = "ID of LIFX SQS"
 }

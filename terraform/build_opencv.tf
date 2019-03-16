@@ -1,3 +1,7 @@
+variable "lambda_bucket_name" {
+  default = "pycvlambda2"
+}
+
 provider "aws" {
   region  = "us-east-1"
   profile = "default"
@@ -5,11 +9,11 @@ provider "aws" {
 
 module "s3_bucket_lambda" {
   source = "modules/s3"
-  name   = "pycvlambda2"
+  name   = "${var.lambda_bucket_name}"
   acl    = "private"
 
   tags {
-    Name = "pycvlambda"
+    Name = "${var.lambda_bucket_name}"
   }
 }
 

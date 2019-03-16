@@ -1,9 +1,5 @@
-variable "rgb_sqs_arn" {
+variable "sqs_arn" {
   description = "the arn of the rgb sqs queue where messages will be received from"
-}
-
-variable "rgb_sqs_url" {
-  description = "url of rgb sqs queue"
 }
 
 variable "layers" {

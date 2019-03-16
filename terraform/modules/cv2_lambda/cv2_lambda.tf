@@ -29,37 +29,11 @@ resource "aws_iam_role_policy" "cv2_lambda" {
     {"Effect": "Allow", "Action": ["lambda:List*", "lambda:Get*", "lambda:InvokeFunction"], "Resource": "arn:aws:lambda:*:*:function:*"},
     {"Effect": "Allow", "Action": ["s3:Get*", "s3:List*"], "Resource": "${var.s3_bucketpics_arn}" },
     {"Effect": "Allow", "Action": ["s3:Get*", "s3:List*"], "Resource": "${var.s3_bucketpics_arn}/*" },
-    {"Effect": "Allow", "Action": ["sqs:SendMessage"], "Resource": "${aws_sqs_queue.rgb_sqs.arn}" }
+    {"Effect": "Allow", "Action": ["sqs:SendMessage"], "Resource": "${var.sqs_arn}" }
   ]
 }
 EOF
 }
-
-resource "aws_sqs_queue" "rgb_sqs" {
-  name = "rgb_sqs"
-  visibility_timeout_seconds = 40
-  message_retention_seconds = 120
-  receive_wait_time_seconds = 20
-}
-
-resource "aws_lambda_permission" "with_s3" {
-  statement_id  = "AllowExecutionFromS3"
-  action        = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.cv2_lambda.function_name}"
-  principal     = "s3.amazonaws.com"
-  source_arn    = "${var.s3_bucketpics_arn}"
-	qualifier     = "${aws_lambda_alias.cv2_latest.name}"
-}
-
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = "${var.s3_bucketpics_id}"
-  lambda_function {
-    lambda_function_arn = "${aws_lambda_alias.cv2_latest.arn}"
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "images/"
-  }
-}
-
 
 resource "aws_lambda_alias" "cv2_latest" {
   name = "cv2_lambda_latest_alias"
@@ -81,16 +55,19 @@ resource "aws_lambda_function" "cv2_lambda" {
   timeout = "${var.timeout}"
   environment = {
     variables = {
-      SQS_URL = "${aws_sqs_queue.rgb_sqs.id}"
+      SQS_URL = "${var.sqs_id}"
     }
   }
 }
 
-
-output "sqs_arn" {
-  value = "${aws_sqs_queue.rgb_sqs.arn}"
+output "alias_name" {
+  value="${aws_lambda_alias.cv2_latest.name}"
 }
 
-output "sqs_url" {
-  value = "${aws_sqs_queue.rgb_sqs.id}"
+output "alias_arn" {
+  value="${aws_lambda_alias.cv2_latest.arn}"
+}
+
+output "function_name" {
+  value="${aws_lambda_function.cv2_lambda.arn}"
 }

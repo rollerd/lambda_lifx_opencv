@@ -2,7 +2,7 @@
 
 This repo contains the Terraform and Python code for building AWS Lambda functions that can set the color of LIFX lightbulbs based on the most dominant average color in an image.
 
-##### Requirements
+#### Requirements
 - An AWS account
 - Python2.7
 - Terraform 0.11.x
@@ -11,14 +11,14 @@ This repo contains the Terraform and Python code for building AWS Lambda functio
 ##### Optional
 - A Raspberry Pi with camera module and internet access
 
-##### How it works
+#### How it works
 An image upload to a specific S3 bucket triggers a Lambda function that will calculate a set of 3 KMeans clusters based on the most dominant colors in the image. The result is a set of mappings holding the percentages of each of the three colors as well as a list of the RGB values for those colors:
 
 ```{'color1':{'rgb':[255,255,255], 'percent': 78}}```
 
 The result is sent to an AWS SQS queue where a second Lambda function then receives the message, finds the color with the largest percentage, and calls the LIFX API with the RGB value of that color.
 
-##### Configuration
+#### Configuration
 - You will need to set your AWS credentials such that Terrform can use them. The easiest way is to just create an `~/.aws/credentials` file with the following format:
 
   ```
@@ -42,12 +42,12 @@ The result is sent to an AWS SQS queue where a second Lambda function then recei
 
 - If you would like to change the number of KMeans clusters, just change the `NUMBER_OF_CLUSTERS` global variable in `scripts/cv2_lamba_function`. Just be aware that you may also need to change the timeout in the Terraform for the cv2_lambda_function.
 
-##### Usage
+#### Usage
 1. First, you will need to create your Lambda opencv and requests layers by compiling OpenCV against an Amazon Linux image. The Terraform and build scripts to do this are provided in this repo and can be run by simply cloning the repo and running:
 
     ```make build_opencv```
 
-      >This will take quite a bit of time (~10min) but will create an S3 bucket and upload the zip files containing the packages needed for the Lambda layers and then shutdown the EC2 instance when it's done, so be patient.
+      >This will take quite a bit of time (~13min) but will create an S3 bucket and upload the zip files containing the packages needed for the Lambda layers and then shutdown the EC2 instance when it's done, so be patient.
     
 2. Once the EC2 instance has shutdown and there are two zip files in the newly created S3 bucket, you can build the Lambda functions. Just run:
 
@@ -56,9 +56,12 @@ The result is sent to an AWS SQS queue where a second Lambda function then recei
  3. After the Terraform build has completed, you should be able to upload a small image to the newly created S3 picture bucket and within a few seconds, see the color of your LIFX bulb change to match the most dominant cluster color in that image.
   
 4. To destroy, just run:
-  ```make destroy_lambda```
-   ```make destroy_opencv```
-   ```make clean-all```
+
+    ```make destroy_lambda```
+
+    ```make destroy_opencv```
+
+    ```make clean-all```
 
 ###### Author
 David Roller

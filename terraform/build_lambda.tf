@@ -13,16 +13,18 @@ provider "aws" {
   profile = "default"
 }
 
+# Create picture bucket
 module "s3_bucket_pics" {
   source = "modules/s3"
   name   = "${var.picture_bucket_name}"
   acl    = "private"
 
   tags {
-    Name = "pycvlambda_pics"
+    Name = "${var.picture_bucket_name}"
   }
 }
 
+# Add Lambda code to S3 bucket
 module "s3_object_cv2_lambda" {
   source      = "modules/s3_objects"
   bucket      = "${var.lambda_bucket_name}"
@@ -44,6 +46,7 @@ module "s3_object_test_pic" {
   source_file = "files/red_yellow.jpg"
 }
 
+# Add layer code to S3 bucket
 module "cv2_lambda_layer" {
   source              = "modules/lambda_layer"
   s3_bucket           = "${var.lambda_bucket_name}"
@@ -60,11 +63,26 @@ module "requests_lambda_layer" {
   compatible_runtimes = ["python2.7"]
 }
 
+# Configure S3 Lambda trigger
+module "s3_trigger" {
+  source = "modules/s3_trigger"
+  function_name = "${module.cv2_lambda.function_name}"
+  s3_bucketpics_arn = "${module.s3_bucket_pics.arn}"
+  s3_bucketpics_id = "${module.s3_bucket_pics.id}"
+  qualifier = "${module.cv2_lambda.alias_name}"
+  alias_arn = "${module.cv2_lambda.alias_arn}"
+}
+
+# Create SQS queue
+module "sqs" {
+  source = "modules/sqs"
+  trigger_function_name = "${module.lifx_lambda.arn}"
+}
+
+# Create Lambda functions
 module "cv2_lambda" {
   source            = "modules/cv2_lambda"
   s3_bucket         = "${var.lambda_bucket_name}"
-  s3_bucketpics_arn = "${module.s3_bucket_pics.arn}"
-  s3_bucketpics_id  = "${module.s3_bucket_pics.id}"
   s3_key            = "${module.s3_object_cv2_lambda.id}"
   function_name     = "cv2_lambda"
   handler           = "cv2_lambda_function.lambda_handler"
@@ -73,6 +91,9 @@ module "cv2_lambda" {
   runtime           = "python2.7"
   memory_size       = 256
   timeout           = 35
+  sqs_arn = "${module.sqs.arn}"
+  sqs_id = "${module.sqs.id}"
+  s3_bucketpics_arn = "${module.s3_bucket_pics.arn}"
 }
 
 module "lifx_lambda" {
@@ -86,7 +107,6 @@ module "lifx_lambda" {
   runtime       = "python2.7"
   memory_size   = 128
   timeout       = 15
-  rgb_sqs_arn   = "${module.cv2_lambda.sqs_arn}"
-  rgb_sqs_url   = "${module.cv2_lambda.sqs_url}"
+  sqs_arn   = "${module.sqs.arn}"
   lifx_token    = "${var.lifx_token}"
 }
