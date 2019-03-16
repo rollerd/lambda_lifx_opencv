@@ -34,7 +34,10 @@ The result is sent to an SQS message queue where a second Lambda function will t
   Once the Terraform build has completed, you should be able to upload a small image to the picture S3 bucket and within a few seconds, see the color of your LIFX bulb change to match the most dominant cluster color in that image.
   
 - To destroy, just run:
+
   ```make destroy_lambda```
+  
    ```make destroy_opencv```
+   
    ```make clean-all```
 
