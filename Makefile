@@ -31,6 +31,18 @@ destroy_lambda: clean
 	terraform init
 	terraform destroy -state=./state/lambda.tfstate
 
+.PHONY: destroy_all
+destroy_all: clean
+	cp terraform/build_lambda.tf ./
+	cp -R terraform/modules ./
+	terraform init
+	terraform destroy -state=./state/lambda.tfstate
+	make clean
+	cp terraform/build_opencv.tf ./
+	cp -R terraform/modules ./
+	terraform init
+	terraform destroy -state=./state/opencv.tfstate
+
 .PHONY: clean
 clean:
 	-@rm -rf modules/
