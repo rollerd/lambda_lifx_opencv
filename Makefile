@@ -1,7 +1,7 @@
 .PHONY: zip_scripts
 zip_scripts:
-	zip -j terraform/modules/s3_objects/files/cv2_lambda_function.zip terraform/modules/s3_objects/files/cv2_lambda_function.py
-	zip -j terraform/modules/s3_objects/files/lifx_lambda_function.zip terraform/modules/s3_objects/files/lifx_lambda_function.py
+	zip -j terraform/modules/s3_objects/files/cv2_lambda_function.zip scripts/cv2_lambda_function.py
+	zip -j terraform/modules/s3_objects/files/lifx_lambda_function.zip scripts/lifx_lambda_function.py
 
 .PHONY: build_opencv
 build_opencv: clean

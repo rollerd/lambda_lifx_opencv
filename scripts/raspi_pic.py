@@ -6,6 +6,7 @@ import boto3
 import subprocess
 from datetime import datetime
 
+PICTURE_BUCKET_NAME="pycvlambdapics2"
 
 def capture_image():
     image_name = "image_{0}.jpg".format(datetime.now().strftime("%m%d%H_%M"))
@@ -21,7 +22,7 @@ def upload_image(image_name):
         image = f.read()
 
     response = s3.put_object(
-            Bucket="pycvlambdapics2",
+            Bucket=PICTURE_BUCKET_NAME,
             Key="images/{0}".format(image_name),
             Body=image
             )

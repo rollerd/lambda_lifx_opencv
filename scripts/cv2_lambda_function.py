@@ -1,10 +1,11 @@
-# import the necessary packages
 from sklearn.cluster import KMeans
 import cv2
 import numpy as np
 import boto3
 import os
 import json
+
+NUMBER_OF_CLUSTERS = 3
 
 # credit to: https://www.pyimagesearch.com/2014/05/26/opencv-python-k-means-color-clustering/
 def lambda_handler(event, context):
@@ -20,7 +21,7 @@ def lambda_handler(event, context):
         input_image = data['Body'].read()
         nparr = np.fromstring(input_image, np.uint8)
 
-        clusters = 3
+        clusters = NUMBER_OF_CLUSTERS
 
         # load the image and convert it from BGR to RGB
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -44,6 +45,7 @@ def lambda_handler(event, context):
         hist = hist.astype("float")
         hist /= hist.sum()
 
+        # Create list of color mappings: [{'color1':{'rgb':[255,255,255], 'percent': 78}}, etc]
         color_result = []
         data_map = {}
         count = 0
@@ -59,6 +61,7 @@ def lambda_handler(event, context):
 
         image_list.append(color_result)
 
+    # Send color mapping list message to SQS
     sqs = boto3.client('sqs')
     queue_url = os.environ.get('SQS_URL')
 

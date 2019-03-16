@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget https://github.com/rollerd/lambda_opencv/archive/master.zip
+wget https://github.com/rollerd/lambda_lifx_opencv/archive/master.zip
 unzip master.zip
 cd lambda_opencv-master/scripts
 chmod 755 build.sh
