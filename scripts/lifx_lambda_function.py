@@ -30,6 +30,8 @@ def lambda_handler(event, context):
         rgb_string = "rgb:{0}".format(",".join([str(x) for x in dominant_color['rgb']]))
 
         payload = {"color": rgb_string}
+        print("REQUEST_PAYLOAD: {0}".format(payload))
+
         headers = {"Authorization": "Bearer {0}".format(LIFX_TOKEN)}
         r = requests.put(url=url, data=json.dumps(payload), headers=headers) 
 
